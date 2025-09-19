@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Networks Commands Cheat Sheet</title>
+    <style>
+        :root {
+            --primary-color: #0078d7;
+            --secondary-color: #f0f0f0;
+            --text-color: #333;
+            --border-color: #ddd;
+            --header-bg: #2c3e50;
+            --header-text: #ecf0f1;
+            --copy-bg: #e74c3c;
+            --copy-hover: #c0392b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fafafa;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+
+        .category-btn:hover {
+            background-color: #005a9e;
+        }
+
+        .category-btn.active {
+            background-color: #005a9e;
+            transform: translateY(-2px);
+        }
+
+        .commands-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 20px;
+        }
+
+        .command-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .command-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .command-category {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            font-size: 1.3rem;
+        }
+
+        .command-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .command-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .command-description {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--copy-bg);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--copy-hover);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #777;
+            font-size: 18px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .commands-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Networks Commands Sheets</h1>
+        <p class="subtitle"></p>
+    </header>
+
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for commands or descriptions...">
+        </div>
+
+        <div class="category-list" id="categoryList">
+            <!-- Categories will be added dynamically -->
+        </div>
+
+        <div class="commands-container" id="commandsContainer">
+            <!-- Command cards will be added here -->
+        </div>
+    </div>
+
+    <div class="notification" id="notification">Command copied to clipboard!</div>
+
+  
+    <script>
+        // CCNA Commands data organized by category
+        const ccnaCommands = {
+            "BASIC": [
+                { command: "enable", description: "Enter global configuration mode." },
+                { command: "configure terminal", description: "To execute any command." },
+                { command: "hostname SW-01", description: "Configure the NAME of the Router or Switch." },
+                { command: "username admin secret admin", description: "Set username and password." },
+                { command: "enable secret admin", description: "Make the privilege level password." },
+                { command: "service password-encryption", description: "Encrypt all passwords." },
+                { command: "line console 0", description: "Enter the console connection configuration mode." },
+                { command: "login", description: "Instruct the router that you want it to check for a password." },
+                { command: "password admin", description: "Set password for Line Console." },
+                { command: "line vty 0 15", description: "To enable telnet connectivity on the Cisco devices." },
+                { command: "copy running-config startup-config", description: "To Save configuration." },
+                { command: "wr", description: "Same as copy running-configuration startup-configuration." }
+            ],
+            "Interface": [
+                { command: "interface fastethernet 0/1", description: "To select a port for configuration." },
+                { command: "interface range fastethernet 0/1-6", description: "To select a range of ports for configuration." },
+                { command: "switchport mode access", description: "To set the port to Access mode." },
+                { command: "no shutdown", description: "To enable the port." },
+                { command: "description MNG", description: "To set description for interface." },
+                { command: "speed 10/ auto", description: "To configure the speed of interface." },
+                { command: "duplex auto/ full/ half", description: "To prevent a duplex mismatch" },
+                { command: "ip address 192.168.1.1 255.255.255.0", description: "To assign an IP address & Subnet Mask for interface." },
+                { command: "switchport access vlan 10", description: "To access the port to VLAN10." },
+                { command: "show interfaces status", description: "Display the status of interfaces." },
+                { command: "show ip interface brief", description: "Display interfaces IP address and status." },
+                { command: "show interface fastethernet 0/1", description: "Display the detail and status of the selected port." },
+                { command: "show cdp interface", description: "Shows which interfaces are running CDP." },
+                { command: "interface Loopback 0", description: "Loopback interface acts as a place holder for the static IP add" },
+                { command: "ip address 10.108.1.1 255.255.255.0", description: "To set an IP address for loopback." }
+            ],
+            "SSH": [
+                { command: "hostname SW-1", description: "Must change the hostname of the device from the default." },
+                { command: "username admin secret admin", description: "Configure a local user and password." },
+                { command: "line vty 0 15", description: "Change parameters for remote access." },
+                { command: "login local", description: "To tell the VTY ports to ask for password from remote user." },
+                { command: "privilege level 15", description: "Default Privilege Levels allows full access to all commands." },
+                { command: "ip ssh version 2", description: "Configures the Switch to run SSH Version 2." },
+                { command: "transport input ssh", description: "This will restrict SSH into this device." },
+                { command: "transport output ssh", description: "This will allow SSH to be initiated from this device." },
+                { command: "ip domain-name cisco.local", description: "Configure a host domain." },
+                { command: "crypto key generate rsa", description: "Make an encryption key- select 1024 bits." },
+                { command: "banner motd \"welcome\"", description: "Display a MESSAGE when you login." }
+            ],
+            "Port Security on Switch": [
+                { command: "interface fastethernet 0/1", description: "Select the interface to configure." },
+                { command: "switchport mode access", description: "Change from dynamic to access mode." },
+                { command: "switchport port-security", description: "To activate port-security." },
+                { command: "switchport port-security maximum 25", description: "Only 25 MAC addresses are allowed." },
+                { command: "switchport port-security mac-address sticky", description: "To memorize MAC addresses." },
+                { command: "switchport port-security violation protect| restrict| shutdown", description: "To choose the violation response." },
+                { command: "spanning-tree bpduguard enable", description: "To disable interface if receives BPDU." },
+                { command: "no cdp run", description: "No one can see what devices are connected." },
+                { command: "ip dhcp snooping", description: "Prevents unauthorized DHCP servers offering IP addresses to DHCP clients." }
+            ],
+            "VLAN": [
+                { command: "vlan 10", description: "To create a VLAN." },
+                { command: "name IT", description: "To name the VLAN." },
+                { command: "interface fastethernet 0/1", description: "Select a port." },
+                { command: "switchport mode access", description: "To change the mode from dynamic to access." },
+                { command: "switchport access vlan 10", description: "To access the interface to VLAN 10." },
+                { command: "show vlan brief", description: "Shows what VLANs exist, name, interface assigned." }
+            ],
+            "VTP": [
+                { command: "vtp domain CSO", description: "The name of the VTP domain." },
+                { command: "vtp password admin", description: "The password for the VTP administrative domain." },
+                { command: "vtp version 3", description: "The VTP version." },
+                { command: "vtp mode server| client| transparent", description: "Choose the VTP mode." },
+                { command: "show vtp status", description: "Displays information about the VTP configuration on device." }
+            ],
+            "Trunk": [
+                { command: "interface Gigabitethernet 0/1", description: "Select a port to configure." },
+                { command: "switchport trunk encapsulation dot1q", description: "To use IEEE 802.1Q encapsulation on frames." },
+                { command: "switchport mode trunk", description: "To convert the link into a trunk link." },
+                { command: "switchport nonegotiate", description: "To Prevents the interface from generating DTP frames." },
+                { command: "swithport trunk native vlan 99", description: "To carry untagged traffic." },
+                { command: "switchport trunk allowed vlan all|none|vlan-list", description: "Define which VLANs allowed on the trunk." },
+                { command: "show interface trunk", description: "Shows the ports that are trunk." }
+            ],
+            "Etherchannel": [
+                { command: "interface portchannel 10", description: "Creates the port channel interface." },
+                { command: "switchport mode trunk", description: "To convert the link into Trunk." },
+                { command: "interface range fastethernet 0/1-4", description: "Select a range of interface to configure." },
+                { command: "switchport mode trunk", description: "To convert the links into Trunk." },
+                { command: "channel-group 10 mode active| passive| on| desirable", description: "Specifies the mode: PAgP supports only the auto and desirable, LACP supports only the active and passive" },
+                { command: "channel-protocol lacp| pagp", description: "Choose the EtherChannel protocol." },
+                { command: "show etherchannel summary", description: "Display brief information of all port-channels." }
+            ],
+            "SVI": [
+                { command: "interface vlan 10", description: "The valid VLAN interface." },
+                { command: "no shutdown", description: "To enable the vlan." },
+                { command: "ip address 192.168.10.1 255.255.255.0", description: "Assign an IP address as default gateway on vlan 10." }
+            ],
+            "IVR": [
+                { command: "interface GigabitEthernet 0/0.10", description: "To create a sub-interface for VLAN 10." },
+                { command: "encapsulation dot1Q 10", description: "Use 802.1Q trunking." },
+                { command: "ip address 10.0.10.1 255.255.255.0", description: "Assign the default gateway ip address of vlan 10." },
+                { command: "show ip interface brief", description: "To see the subinterfaces with IP addresses." }
+            ],
+            "DHCP": [
+                { command: "interface Vlan 10", description: "Select a valid vlan interface." },
+                { command: "ip address 192.168.10.1 255.255.255.0", description: "To set the default gateway of vlan 10." },
+                { command: "no shutdown", description: "To enable the vlan." },
+                { command: "ip dhcp excluded-address 192.168.10.0 192.168.1.10", description: "Set excluded IP Addresses." },
+                { command: "ip dhcp pool VLAN-10", description: "To create a DHCP pool, also will change the mode to DHCP pool configuration mode." },
+                { command: "network 192.168.10.0 255.255.255.0", description: "Set the Network with SM." },
+                { command: "default-router 192.168.10.1", description: "To set default gateway for vlan 10." },
+                { command: "dns-server 192.168.10.2", description: "To Set a primary DNS server for the clients." },
+                { command: "show ip dhcp binding", description: "Displays the IP DHCP server lease entry." }
+            ],
+            "DHCP Relay Agent": [
+                { command: "interface FastEthernet 0/1", description: "The interface that connect to server." },
+                { command: "description DHCP", description: "To set description for the port." },
+                { command: "switchport trunk encapsulation dot1q", description: "To use IEEE 802.1Q encapsulation on the frames." },
+                { command: "switchport mode trunk", description: "To convert the link into trunk." },
+                { command: "ip dhcp snooping trust", description: "Configure the interface as a trusted interface." },
+                { command: "interface vlan 100", description: "The DHCP Vlan." },
+                { command: "ip address 192.168.100.2 255.255.255.0", description: "To set gateway for dhcp vlan." },
+                { command: "ip helper-address 192.168.100.1", description: "Now set ip helper-address on Vlan so clients could receive IP add." }
+            ],
+            "Spanning Tree Protocol": [
+                { command: "spanning-tree mode stp| rstp", description: "To select which Spanning Tree Protocol(STP) protocol to run." },
+                { command: "spanning-tree vlan 10,20 root primary| secondary", description: "To set these vlans as primary." },
+                { command: "spanning-tree vlan 10 priority 100", description: "The low value will have higher priority." },
+                { command: "spanning-tree hello-time 5", description: "How often the device broadcasts Hello messages to other devices." },
+                { command: "spanning-tree guard root", description: "So it cannot be selected as the root port even if it receives superior STP BPDUs." },
+                { command: "spanning-tree portfast", description: "To be a\"designated port\" immediately without going through the normal listening and learning states." },
+                { command: "spannnig-tree bpdugaurd enable", description: "To shutdown an interface when it receives a BPDU, will reduce the risk of attacks on the network." },
+                { command: "show switch spanning-tree", description: "To see the STP configuration." }
+            ],
+            "ROUTING": [
+                { command: "Static route: 172.16.0.0 255.255.0.0 gigabitethernet 0/1", description: "Static route configuration" },
+                { command: "Next Hop: 172.16.0.0 255.255.0.0 10.10.10.1", description: "Next hop route configuration" },
+                { command: "Default route: 0.0.0.0 0.0.0.0 10.10.10.1", description: "Default route configuration" }
+            ],
+            "EIGRP": [
+                { command: "router eigrp 100", description: "Assign an ID to EIGRP." },
+                { command: "network 172.16.10.0 0.0.0.3", description: "Define the interfaces+ Wildcard mask." },
+                { command: "network 10.10.40.0 0.0.0.255", description: "Define the interfaces+ Wildcard mask." },
+                { command: "no auto-summary", description: "EIGRP auto-summary will only create summary routes for directly connected networks, not for routes you learn from other EIGRP routers." },
+                { command: "redistribute eigrp 200 metric 1000000 100 255 1 1500", description: "To exchange routing information between different routing protocols – Eigrp metric{ bandwidth| delay| reliability| load| MTU}" },
+                { command: "show ip route", description: "To display the Ipv4 routing table." },
+                { command: "show ip eigrp topology", description: "To view all available routes for each destination." },
+                { command: "show ip route eigrp", description: "To list all routes added in the routing table by EIGRP." },
+                { command: "show ip eigrp neighbors", description: "To see the routers which became neighbors." }
+            ],
+            "OSPF": [
+                { command: "router ospf 1", description: "Enables OSPF configuration mode." },
+                { command: "network 192.168.10.0 0.0.0.255 area 0", description: "To define network and area." },
+                { command: "ip ospf cost 1562", description: "To set an absolute OSPF cost for a link." },
+                { command: "ip ospf hello-interval seconds", description: "Change hello timer from default 10 seconds." },
+                { command: "ip ospf dead-interval seconds", description: "Change dead timer from default 40 seconds" },
+                { command: "show ip ospf interface", description: "Displays OSPF-related interface information." },
+                { command: "show ip ospf neighbor", description: "Displays OSPF neighbors information." }
+            ],
+            "RIP": [
+                { command: "router rip", description: "Enable RIP routing mode." },
+                { command: "network 192.168.10.0", description: "To define the interfeces network which are connecte" },
+                { command: "version 2", description: "Enable RIP routing protocol version 2." },
+                { command: "no auto-summary", description: "To disable automatically summarize networks." },
+                { command: "show rip database", description: "Displays information about routes in the Routing Information Base." },
+                { command: "show rip neighbors", description: "Displays information about all RIP route gateways." }
+            ],
+            "ACL": [
+                { command: "access-list 1 permit host 192.168.146.0", description: "Access-list standard(1-99) -To allow access for this host." },
+                { command: "access-list 1 deny 11.0.0.0 0.0.0.255", description: "To deny access for this host." },
+                { command: "ip access-group 1 out | in", description: "Set this on incoming | outgoing interfaces." },
+                { command: "access-list 100 permit ip 10.0.0.1 0.0.0.0 host 192.168.0.1", description: "To allow all access to host 192.168.0.1." },
+                { command: "access-list 100 deny ip 10.0.0.2 0.0.0.0 host 192.168.0.1", description: "To deny all access to host 192.168.0.1." },
+                { command: "interface fastethernet 0/0", description: "Select the port." },
+                { command: "ip access-group 100 in", description: "Set this on incoming | outgoing interfaces." },
+                { command: "ip access-list extended 100", description: "Access list extended(100-199)." },
+                { command: "permit tcp 10.0.0.2 0.0.0.3 host 192.168.0.1 eq 80", description: "To allow access only for website 192.168.0.1." },
+                { command: "permit tcp any any eq 80", description: "To allow web access for all." },
+                { command: "permit ip any any", description: "Full access for all." },
+                { command: "deny udp 172.16.10.0 0.0.0.255 host 192.168.0.1 eq 53", description: "To deny DNS." },
+                { command: "deny icmp 10.10.10.0 0.0.0.3 host 192.168.0.1", description: "To deny ICMP." }
+            ],
+            "NAT": [
+                { command: "ip nat inside source static 10.0.0.0 255.255.255.0 100.1.1.1", description: "10.0.0.0 will translate to ip public 100.1.1.1" },
+                { command: "interface fastethernet 0/1", description: "Incoming port" },
+                { command: "ip nat inside", description: "" },
+                { command: "interface fastethernet 0/2", description: "Outgoing port" },
+                { command: "ip nat outside", description: "" },
+                { command: "interface fastethernet 0/0", description: "Incoming interface." },
+                { command: "ip nat inside", description: "" },
+                { command: "interface fastethernet 0/1", description: "Outgoing interface." },
+                { command: "ip nat outside", description: "" },
+                { command: "access-list 1 permit 10.0.0.0 0.0.0.255", description: "Define the network that have access." },
+                { command: "ip nat pool STUDY 5.5.5.1 5.5.5.11 netmask 255.255.255.0", description: "Define a pool of public ip address." },
+                { command: "ip nat inside source list 1 pool STUDY", description: "Dynamic NAT command." },
+                { command: "show ip nat translations", description: "To show NAT table." },
+                { command: "access list 1 permit 192.168.0.0 0.255.255.255", description: "Define the network that have access." },
+                { command: "ip nat pool STUDY 20.20.20.2 20.20.20.2 netmask 255.255.255.252", description: "Define a pool which include single ip public." },
+                { command: "ip nat inside source list 1 pool STUDY overload", description: "PAT Command." },
+                { command: "interface fastethernet 0/1", description: "Incoming port." },
+                { command: "ip nat inside", description: "" },
+                { command: "interface fastethernet 0/2", description: "Outgoing port." },
+                { command: "ip nat outside", description: "" }
+            ],
+            "HSRP Configuration": [
+                { command: "interface gigabitethernet 0/1", description: "Enter the interface which you want to enable HSRP." },
+                { command: "standby 10 ip 172.167.10.10", description: "Create the HSRP group using its number and virtual IP address." },
+                { command: "standby 10 priority 120", description: "Assigning priority helps select the active and standby- The highest number represents the highest priority." },
+                { command: "standby preempt", description: "If preemption is enabled, the switch with the highest priority becomes the designated active." },
+                { command: "standby 10 delay 300", description: "To postpone taking over the active role for the shown number of seconds." },
+                { command: "standby 1 timers 5 15", description: "Configure the time between hello packets and the time before other switche declare the active switch to be down." },
+                { command: "show standby", description: "To see if HSRP is active." },
+                { command: "show standby brief", description: "To see HSRP details." }
+            ],
+            "Troubleshoot": [
+                { command: "ping 172.16.10.10", description: "To reach the destination host." },
+                { command: "traceroute 172.16.10.10", description: "Shows the path taken to reach the destination host." },
+                { command: "show process cpu", description: "Shows cpu statistics." },
+                { command: "show arp", description: "Display the arp cache." },
+                { command: "show users", description: "Displays the users currently logged on." },
+                { command: "show reload", description: "Reboots the device." },
+                { command: "clrear crypto session", description: "Debug crypto isakmp." },
+                { command: "ip routing", description: "Activate IPv4 routing within the switch." },
+                { command: "show running-config", description: "Display the running configuration – active." },
+                { command: "show startup-config", description: "Display the startup configuration." },
+                { command: "show ip route connected", description: "Show routing table entries for directly connected networks." },
+                { command: "show version", description: "Display the software version that the switch runs." },
+                { command: "show inventory", description: "To display the product inventory listing of all Cisco products installed in the networking device." },
+                { command: "show module", description: "Display status and information for all modules." },
+                { command: "show clock", description: "Display the clock." },
+                { command: "show cdp neighbors", description: "Show directly connected cisco devices." },
+                { command: "show mac-address table", description: "Display switch mac address table." },
+                { command: "show standby", description: "See if HSRP is active." }
+            ],
+            "Common Port Numbers and Protocols": [
+                { command: "FTP Control: TCP port 21", description: "File Transfer Protocol" },
+                { command: "FTP Data: TCP Port 20", description: "File Transfer Protocol" },
+                { command: "SSH: TCP Port 22", description: "Secure Shell" },
+                { command: "Telnet: TCP Port 23", description: "Telnet" },
+                { command: "SMTP: TCP Port 25", description: "Simple Mail Transfer Protocol" },
+                { command: "DHCP: UDP Port 67(request from client to server) UDP Port 68(reply from server to client)", description: "Dynamic Host Configuration Protocol" },
+                { command: "HTTP: TCP Port 80", description: "Hypertext Transfer Protocol" },
+                { command: "HTTPS: TCP Port 443", description: "Secure Hypertext Transfer Protocol" },
+                { command: "POP: TCP Port 110", description: "Post Office Protocol – incoming mail" },
+                { command: "NTP: UDP Port 123", description: "Network Time Protocol" },
+                { command: "SNMP: UDP Port 161", description: "Simple Network Management Protocol" },
+                { command: "DNS: TCP, UDP Port 53", description: "Domain Name System name resolver" },
+                { command: "TFTP: UDP Port 69", description: "Trivial File Transfer Protocol" },
+                { command: "IMAP: TCP, UDP Port 143", description: "Internet Message Access Protocol" },
+                { command: "RDP: TCP port 3389", description: "Remote Desktop Protocol" }
+            ]
+        };
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const categoryList = document.getElementById('categoryList');
+        const commandsContainer = document.getElementById('commandsContainer');
+        const notification = document.getElementById('notification');
+
+        // Current active category
+        let activeCategory = null;
+
+        // Create category buttons
+        function createCategoryButtons() {
+            categoryList.innerHTML = '';
+            
+            // Add "All" button
+            const allBtn = document.createElement('button');
+            allBtn.className = 'category-btn active';
+            allBtn.textContent = 'All';
+            allBtn.addEventListener('click', () => {
+                setActiveCategory(null);
+                filterCommands();
+            });
+            categoryList.appendChild(allBtn);
+
+            // Add category buttons
+            Object.keys(ccnaCommands).forEach(category => {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.textContent = category;
+                btn.addEventListener('click', () => {
+                    setActiveCategory(category);
+                    filterCommands();
+                });
+                categoryList.appendChild(btn);
+            });
+        }
+
+        // Set active category
+        function setActiveCategory(category) {
+            activeCategory = category;
+            
+            // Update button states
+            const buttons = categoryList.querySelectorAll('.category-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent === 'All' && category === null) {
+                    btn.classList.add('active');
+                } else if (btn.textContent === category) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Create command cards
+        function createCommandCards() {
+            commandsContainer.innerHTML = '';
+            
+            let categoriesToShow = activeCategory ? [activeCategory] : Object.keys(ccnaCommands);
+            
+            categoriesToShow.forEach(category => {
+                const categoryCommands = ccnaCommands[category];
+                
+                // Filter commands based on search
+                const filteredCommands = categoryCommands.filter(cmd => {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    return cmd.command.toLowerCase().includes(searchTerm) || 
+                           cmd.description.toLowerCase().includes(searchTerm);
+                });
+                
+                // Only create card if there are commands to show
+                if (filteredCommands.length > 0) {
+                    const card = document.createElement('div');
+                    card.className = 'command-card';
+                    
+                    const categoryTitle = document.createElement('div');
+                    categoryTitle.className = 'command-category';
+                    categoryTitle.textContent = category;
+                    card.appendChild(categoryTitle);
+                    
+                    filteredCommands.forEach(cmd => {
+                        const commandItem = document.createElement('div');
+                        commandItem.className = 'command-item';
+                        
+                        const commandText = document.createElement('div');
+                        commandText.className = 'command-text';
+                        commandText.textContent = cmd.command;
+                        commandItem.appendChild(commandText);
+                        
+                        const commandDesc = document.createElement('div');
+                        commandDesc.className = 'command-description';
+                        commandDesc.textContent = cmd.description;
+                        commandItem.appendChild(commandDesc);
+                        
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'copy-btn';
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.addEventListener('click', () => {
+                            copyToClipboard(cmd.command);
+                        });
+                        commandItem.appendChild(copyBtn);
+                        
+                        card.appendChild(commandItem);
+                    });
+                    
+                    commandsContainer.appendChild(card);
+                }
+            });
+            
+            // Show no results message if no commands found
+            if (commandsContainer.children.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'No commands found matching your search.';
+                commandsContainer.appendChild(noResults);
+            }
+        }
+
+        // Copy command to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Command copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy command');
+            });
+        }
+
+        // Show notification
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Filter commands based on search and category
+        function filterCommands() {
+            createCommandCards();
+        }
+
+        // Initialize the page
+        function init() {
+            createCategoryButtons();
+            createCommandCards();
+            
+            // Add event listener for search input
+            searchInput.addEventListener('input', filterCommands);
+        }
+
+        // Run initialization when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+
+<!-- HTML -->
+<a href="mailto:charuxq@gmail.com" class="floating-email" title="Contact Me">
+    <i class="fas fa-envelope"></i>
+</a>
+
+<!-- CSS -->
+<style>
+.floating-email {
+    position: fixed;
+    bottom: 30px;
+    right: 100px; /* Position left of GitHub if both exist */
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ea4335, #e53935);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-size: 1.6rem;
+    box-shadow: 0 4px 12px rgba(234, 67, 53, 0.4);
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1000;
+    border: none;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-email:hover {
+    transform: translateY(-5px) rotate(10deg) scale(1.15);
+    box-shadow: 0 8px 20px rgba(234, 67, 53, 0.6);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+</style>
+
+<!-- Font Awesome (if not already included) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
